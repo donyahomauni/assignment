@@ -1,0 +1,62 @@
+package model;
+
+public abstract class Car {
+
+    private String manufacturer;
+    private Integer power;
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public Integer getPower() {
+        return power;
+    }
+
+    public void setPower(Integer power) {
+        this.power = power;
+    }
+}
+package factory;
+
+import model.Benz;
+import model.Bmw;
+import model.Car;
+
+public class Factory {
+
+    public Car createCar(String type){
+        Car result = null;
+
+        switch (type){
+            case "BMW":
+                result = getBmw();
+                break;
+            case "Benz":
+                result = getBenz();
+                break;
+            default:
+                throw new IllegalArgumentException("not a correct type");
+        }
+
+        return result;
+    }
+
+    private Car getBmw(){
+        Bmw bmw = new Bmw();
+        bmw.setManufacturer("BMW");
+        bmw.setPower(255);
+        return bmw;
+    }
+
+    private Car getBenz(){
+        Benz benz = new Benz();
+        benz.setManufacturer("Mercedes-Benz");
+        benz.setPower(201);
+        return benz;
+    }
+}
