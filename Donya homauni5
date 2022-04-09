@@ -1,0 +1,187 @@
+package main;
+
+import builder.StudentBuilder;
+import model.Student;
+
+public class Main {
+    public static void main(String[] args) {
+        Student student = new StudentBuilder().setFullName("Donya Homayooni")
+                .setPassword("123456").build();
+
+        System.out.println(student);
+    }
+}
+package main;
+
+import factory.Factory;
+import model.Car;
+
+public class Main {
+    public static void main(String[] args) {
+        Factory factory = new Factory();
+
+        Car bmw = factory.createCar("BMW");
+        Car benz = factory.createCar("Benz");
+
+        System.out.println(String.join(" " , bmw.getManufacturer() , bmw.getPower().toString()));
+        System.out.println(String.join(" " , benz.getManufacturer() , benz.getPower().toString()));
+    }
+}
+package model;
+
+public class Student {
+
+    private String username;
+    private String fullName;
+    private String password;
+    private Integer age;
+    private String address;
+    private String phoneNo;
+    private String degree;
+
+    public Student(String username, String fullName, String password,
+                   Integer age, String address, String phoneNo, String degree) {
+        this.username = username;
+        this.fullName = fullName;
+        this.password = password;
+        this.age = age;
+        this.address = address;
+        this.phoneNo = phoneNo;
+        this.degree = degree;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
+    }
+
+    public String getDegree() {
+        return degree;
+    }
+
+    public void setDegree(String degree) {
+        this.degree = degree;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "username='" + username + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", password='" + password + '\'' +
+                ", age=" + age +
+                ", address='" + address + '\'' +
+                ", phoneNo='" + phoneNo + '\'' +
+                ", degree='" + degree + '\'' +
+                '}';
+    }
+}
+package builder;
+
+import model.Student;
+
+public class StudentBuilder {
+
+    private String username;
+    private String fullName;
+    private String password;
+    private Integer age;
+    private String address;
+    private String phoneNo;
+    private String degree;
+
+    public StudentBuilder(String username, String fullName, String password,
+                          Integer age, String address, String phoneNo, String degree) {
+        this.username = username;
+        this.fullName = fullName;
+        this.password = password;
+        this.age = age;
+        this.address = address;
+        this.phoneNo = phoneNo;
+        this.degree = degree;
+    }
+
+    public StudentBuilder(){}
+
+    public StudentBuilder setUsername(String username) {
+        this.username = username;
+        return this;
+    }
+
+    public StudentBuilder setFullName(String fullName) {
+        this.fullName = fullName;
+        return this;
+    }
+
+    public StudentBuilder setPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public StudentBuilder setAge(Integer age) {
+        this.age = age;
+        return this;
+    }
+
+    public StudentBuilder setAddress(String address) {
+        this.address = address;
+        return this;
+    }
+
+    public StudentBuilder setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
+        return this;
+    }
+
+    public StudentBuilder setDegree(String degree) {
+        this.degree = degree;
+        return this;
+    }
+
+    public Student build(){
+        return new Student(username , fullName , password , age , address , phoneNo , degree);
+    }
+}
