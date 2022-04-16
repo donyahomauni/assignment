@@ -1,0 +1,293 @@
+package util;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+public class Connection {
+    public static void save(Object o){
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // start a transaction
+            transaction = session.beginTransaction();
+            // save the objects
+            session.persist(o);
+            // commit transaction
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    public static Object get(String className, Long id){
+        try (Session session = HibernateUtil.getSessionFactory().openSession()){
+            return session.get(className, id);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
+package util;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+
+public class HibernateUtil {
+    private static StandardServiceRegistry registry;
+    private static SessionFactory sessionFactory;
+
+    public static SessionFactory getSessionFactory() {
+        if (sessionFactory == null) {
+            try {
+                // Create registry
+                registry = new StandardServiceRegistryBuilder().configure().build();
+
+                // Create MetadataSources
+                MetadataSources sources = new MetadataSources(registry);
+
+                // Create Metadata
+                Metadata metadata = sources.getMetadataBuilder().build();
+
+                // Create SessionFactory
+                sessionFactory = metadata.getSessionFactoryBuilder().build();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (registry != null) {
+                    StandardServiceRegistryBuilder.destroy(registry);
+                }
+            }
+        }
+        return sessionFactory;
+    }
+
+    public static void shutdown() {
+        if (registry != null) {
+            StandardServiceRegistryBuilder.destroy(registry);
+        }
+    }
+}
+package main;
+
+import service.UserService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+    private static final UserService service = new UserService();
+
+    public static void main(String[] args) {
+        System.out.println("create:1   update:2   delete:3");
+
+        Scanner scanner = new Scanner(System.in);
+
+        boolean result;
+
+        switch (scanner.nextInt()){
+            case 1:
+                scanner.nextLine();
+                result = create();
+                break;
+            case 2:
+                scanner.nextLine();
+                result = update();
+                break;
+            case 3:
+                scanner.nextLine();
+                result = delete();
+                break;
+            default:
+                throw new IllegalArgumentException("Not a provided Value");
+        }
+
+        if (result)
+            System.out.println("done");
+        else System.out.println("something went wrong!!");
+
+    }
+
+    private static boolean create(){
+
+        Scanner scanner = new Scanner(System.in);
+
+        List<String> string = new ArrayList<>();
+
+        System.out.println("Enter these values " +
+                "in order to create a user: username , pass , email , degree , age");
+
+        for (int i = 0; i <= 3; i++)
+        {
+            string.add(scanner.nextLine());
+        }
+
+        int age = scanner.nextInt();
+
+        return service.save(0L , string.get(0) ,
+                string.get(1) , string.get(2) , string.get(3) , age);
+    }
+
+    private static boolean update(){
+        Scanner scanner = new Scanner(System.in);
+
+        List<String> string = new ArrayList<>();
+
+        System.out.println("Enter these values " +
+                "in order to update a user: id , username , pass , email , degree , age");
+
+        long id = scanner.nextInt();
+
+        scanner.nextLine();
+
+        for (int i = 0; i <= 3; i++)
+        {
+            string.add(scanner.nextLine());
+        }
+
+        int age = scanner.nextInt();
+
+        return service.save(id , string.get(0) ,
+                string.get(1) , string.get(2) , string.get(3) , age);
+    }
+
+    private static boolean delete(){
+
+        Scanner scanner = new Scanner(System.in);
+
+        List<String> string = new ArrayList<>();
+
+        System.out.println("Enter the id in order to delete a user: ");
+
+        long id = scanner.nextInt();
+
+        return service.delete(id);
+    }
+}
+package model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    private String username;
+
+    private String password;
+
+    private String email;
+
+    private Integer age;
+
+    private String degree;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public String getDegree() {
+        return degree;
+    }
+
+    public void setDegree(String degree) {
+        this.degree = degree;
+    }
+}
+package service;
+
+import model.User;
+import org.hibernate.Session;
+import util.HibernateUtil;
+
+import javax.persistence.EntityManager;
+import java.util.Objects;
+
+public class UserService {
+
+    public boolean save(long id , String username , String pass , String email , String degree , int age){
+        EntityManager entityManager = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            entityManager = session.getEntityManagerFactory().createEntityManager();
+
+            entityManager.getTransaction().begin();
+            User user = entityManager.find(User.class, id);
+            if (Objects.isNull(user)) {
+                user = new User();
+            }
+            user.setUsername(username);
+            user.setPassword(pass);
+            user.setEmail(email);
+            user.setDegree(degree);
+            user.setAge(age);
+
+            entityManager.persist(user);
+            entityManager.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean delete(long id){
+        EntityManager entityManager = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            entityManager = session.getEntityManagerFactory().createEntityManager();
+
+            entityManager.getTransaction().begin();
+            User user = entityManager.find(User.class, id);
+
+            entityManager.remove(user);
+            entityManager.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+}
