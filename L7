@@ -1,0 +1,569 @@
+package util;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+public class Connection {
+    public static void save(Object o){
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // start a transaction
+            transaction = session.beginTransaction();
+            // save the objects
+            session.persist(o);
+            // commit transaction
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    public static Object get(String className, Long id){
+        try (Session session = HibernateUtil.getSessionFactory().openSession()){
+            return session.get(className, id);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
+package util;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+
+public class HibernateUtil {
+    private static StandardServiceRegistry registry;
+    private static SessionFactory sessionFactory;
+
+    public static SessionFactory getSessionFactory() {
+        if (sessionFactory == null) {
+            try {
+                // Create registry
+                registry = new StandardServiceRegistryBuilder().configure().build();
+
+                // Create MetadataSources
+                MetadataSources sources = new MetadataSources(registry);
+
+                // Create Metadata
+                Metadata metadata = sources.getMetadataBuilder().build();
+
+                // Create SessionFactory
+                sessionFactory = metadata.getSessionFactoryBuilder().build();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (registry != null) {
+                    StandardServiceRegistryBuilder.destroy(registry);
+                }
+            }
+        }
+        return sessionFactory;
+    }
+
+    public static void shutdown() {
+        if (registry != null) {
+            StandardServiceRegistryBuilder.destroy(registry);
+        }
+    }
+}
+/*
+ * Created by JFormDesigner on Sat Apr 23 22:50:17 IRDT 2022
+ */
+
+package view;
+
+import controller.UserController;
+import repo.Repository;
+import service.UserService;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ * @author unknown
+ */
+public class Index extends JFrame {
+    public Index() {
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setVisible(true);
+        initComponents();
+    }
+
+    private void button1(ActionEvent e) {
+        UserController controller = new UserController();
+        controller.save(Repository.currentUser.getId(), 1000 , 2);
+    }
+
+    private void button2(ActionEvent e) {
+        UserController controller = new UserController();
+        controller.save(Repository.currentUser.getId(), 2000 , 4);
+    }
+
+    private void button3(ActionEvent e) {
+        UserController controller = new UserController();
+        controller.save(Repository.currentUser.getId(), 5000 , 10);
+    }
+
+    private void button4(ActionEvent e) {
+        UserController controller = new UserController();
+        controller.save(Repository.currentUser.getId(), 10000 , 25);
+    }
+
+    private void initComponents() {
+        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner Evaluation license - unknown
+        panel1 = new JPanel();
+        button1 = new JButton();
+        button2 = new JButton();
+        button3 = new JButton();
+        button4 = new JButton();
+
+        //======== this ========
+        Container contentPane = getContentPane();
+        contentPane.setLayout(null);
+
+        //======== panel1 ========
+        {
+            panel1.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder
+            (0,0,0,0), "JF\u006frmDes\u0069gner \u0045valua\u0074ion",javax.swing.border.TitledBorder.CENTER,javax.swing.border
+            .TitledBorder.BOTTOM,new java.awt.Font("D\u0069alog",java.awt.Font.BOLD,12),java.awt
+            .Color.red),panel1. getBorder()));panel1. addPropertyChangeListener(new java.beans.PropertyChangeListener(){@Override public void
+            propertyChange(java.beans.PropertyChangeEvent e){if("\u0062order".equals(e.getPropertyName()))throw new RuntimeException()
+            ;}});
+            panel1.setLayout(null);
+
+            //---- button1 ----
+            button1.setText("2GB 1000");
+            button1.addActionListener(e -> button1(e));
+            panel1.add(button1);
+            button1.setBounds(110, 80, 193, button1.getPreferredSize().height);
+
+            //---- button2 ----
+            button2.setText("4GB 2000");
+            button2.addActionListener(e -> button2(e));
+            panel1.add(button2);
+            button2.setBounds(110, 115, 193, 30);
+
+            //---- button3 ----
+            button3.setText("10GB 5000");
+            button3.addActionListener(e -> button3(e));
+            panel1.add(button3);
+            button3.setBounds(110, 150, 193, 30);
+
+            //---- button4 ----
+            button4.setText("25GB 10000");
+            button4.addActionListener(e -> button4(e));
+            panel1.add(button4);
+            button4.setBounds(110, 185, 193, 30);
+
+            {
+                // compute preferred size
+                Dimension preferredSize = new Dimension();
+                for(int i = 0; i < panel1.getComponentCount(); i++) {
+                    Rectangle bounds = panel1.getComponent(i).getBounds();
+                    preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                    preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                }
+                Insets insets = panel1.getInsets();
+                preferredSize.width += insets.right;
+                preferredSize.height += insets.bottom;
+                panel1.setMinimumSize(preferredSize);
+                panel1.setPreferredSize(preferredSize);
+            }
+        }
+        contentPane.add(panel1);
+        panel1.setBounds(0, -30, 400, 300);
+
+        {
+            // compute preferred size
+            Dimension preferredSize = new Dimension();
+            for(int i = 0; i < contentPane.getComponentCount(); i++) {
+                Rectangle bounds = contentPane.getComponent(i).getBounds();
+                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+            }
+            Insets insets = contentPane.getInsets();
+            preferredSize.width += insets.right;
+            preferredSize.height += insets.bottom;
+            contentPane.setMinimumSize(preferredSize);
+            contentPane.setPreferredSize(preferredSize);
+        }
+        pack();
+        setLocationRelativeTo(getOwner());
+        // JFormDesigner - End of component initialization  //GEN-END:initComponents
+    }
+
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // Generated using JFormDesigner Evaluation license - unknown
+    private JPanel panel1;
+    private JButton button1;
+    private JButton button2;
+    private JButton button3;
+    private JButton button4;
+    // JFormDesigner - End of variables declaration  //GEN-END:variables
+}
+package model;
+
+import javax.persistence.*;
+
+@Entity
+public class Internet {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    @OneToOne
+    private User user;
+
+    private Integer price;
+
+    private Integer volume;
+
+    public Long getId() {
+        return id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
+    public Integer getVolume() {
+        return volume;
+    }
+
+    public void setVolume(Integer volume) {
+        this.volume = volume;
+    }
+}
+/*
+ * Created by JFormDesigner on Sat Apr 23 22:45:56 IRDT 2022
+ */
+
+package view;
+
+import controller.UserController;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ * @author unknown
+ */
+public class LoginView extends JFrame {
+    public LoginView() {
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setVisible(true);
+        initComponents();
+    }
+
+    private void button1(ActionEvent e) {
+        UserController controller = new UserController();
+        controller.auth(username.getText() , password.getText());
+    }
+
+    private void initComponents() {
+        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        // Generated using JFormDesigner Evaluation license - unknown
+        panel1 = new JPanel();
+        label1 = new JLabel();
+        label2 = new JLabel();
+        username = new JTextField();
+        password = new JTextField();
+        button1 = new JButton();
+
+        //======== this ========
+        Container contentPane = getContentPane();
+        contentPane.setLayout(null);
+
+        //======== panel1 ========
+        {
+            panel1.setBorder (new javax. swing. border. CompoundBorder( new javax .swing .border .TitledBorder (new javax. swing. border. EmptyBorder(
+            0, 0, 0, 0) , "JF\u006frmD\u0065sig\u006eer \u0045val\u0075ati\u006fn", javax. swing. border. TitledBorder. CENTER, javax. swing. border. TitledBorder
+            . BOTTOM, new java .awt .Font ("Dia\u006cog" ,java .awt .Font .BOLD ,12 ), java. awt. Color.
+            red) ,panel1. getBorder( )) ); panel1. addPropertyChangeListener (new java. beans. PropertyChangeListener( ){ @Override public void propertyChange (java .
+            beans .PropertyChangeEvent e) {if ("\u0062ord\u0065r" .equals (e .getPropertyName () )) throw new RuntimeException( ); }} );
+            panel1.setLayout(null);
+
+            //---- label1 ----
+            label1.setText("username:");
+            label1.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+            label1.setHorizontalAlignment(SwingConstants.LEFT);
+            panel1.add(label1);
+            label1.setBounds(30, 70, 80, 30);
+
+            //---- label2 ----
+            label2.setText("password:");
+            label2.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+            label2.setHorizontalAlignment(SwingConstants.LEFT);
+            panel1.add(label2);
+            label2.setBounds(30, 105, 75, 30);
+            panel1.add(username);
+            username.setBounds(115, 75, 140, username.getPreferredSize().height);
+            panel1.add(password);
+            password.setBounds(115, 110, 140, password.getPreferredSize().height);
+
+            //---- button1 ----
+            button1.setText("submit");
+            button1.addActionListener(e -> button1(e));
+            panel1.add(button1);
+            button1.setBounds(new Rectangle(new Point(290, 95), button1.getPreferredSize()));
+
+            {
+                // compute preferred size
+                Dimension preferredSize = new Dimension();
+                for(int i = 0; i < panel1.getComponentCount(); i++) {
+                    Rectangle bounds = panel1.getComponent(i).getBounds();
+                    preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                    preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+                }
+                Insets insets = panel1.getInsets();
+                preferredSize.width += insets.right;
+                preferredSize.height += insets.bottom;
+                panel1.setMinimumSize(preferredSize);
+                panel1.setPreferredSize(preferredSize);
+            }
+        }
+        contentPane.add(panel1);
+        panel1.setBounds(0, -30, 400, 300);
+
+        {
+            // compute preferred size
+            Dimension preferredSize = new Dimension();
+            for(int i = 0; i < contentPane.getComponentCount(); i++) {
+                Rectangle bounds = contentPane.getComponent(i).getBounds();
+                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+            }
+            Insets insets = contentPane.getInsets();
+            preferredSize.width += insets.right;
+            preferredSize.height += insets.bottom;
+            contentPane.setMinimumSize(preferredSize);
+            contentPane.setPreferredSize(preferredSize);
+        }
+        pack();
+        setLocationRelativeTo(getOwner());
+        // JFormDesigner - End of component initialization  //GEN-END:initComponents
+    }
+
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // Generated using JFormDesigner Evaluation license - unknown
+    private JPanel panel1;
+    private JLabel label1;
+    private JLabel label2;
+    private JTextField username;
+    private JTextField password;
+    private JButton button1;
+    // JFormDesigner - End of variables declaration  //GEN-END:variables
+}
+import controller.UserController;
+import model.User;
+import service.UserService;
+import view.LoginView;
+
+import java.util.Objects;
+
+public class Main {
+
+    public static void main(String[] args) {
+        UserService service = new UserService();
+        UserController controller = new UserController();
+        if(Objects.isNull(service.findByPass("user" , "pass"))) {
+            controller.save(0L, "user", "pass");
+            controller.save(1L , 0 , 0);
+        }
+
+        new LoginView();
+    }
+}
+package repo;
+
+import model.User;
+
+import java.util.Map;
+
+public class Repository {
+
+    public static User currentUser;
+}
+package model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    private String username;
+
+    private String password;
+
+    private Integer volume;
+
+    private Integer sumPrice;
+
+    public Long getId() {
+        return id;
+    }
+
+    public Integer getVolume() {
+        return volume;
+    }
+
+    public void setVolume(Integer volume) {
+        this.volume = volume;
+    }
+
+    public Integer getSumPrice() {
+        return sumPrice;
+    }
+
+    public void setSumPrice(Integer sumPrice) {
+        this.sumPrice = sumPrice;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}
+package controller;
+
+import model.User;
+import org.hibernate.Session;
+import repo.Repository;
+import service.UserService;
+import util.HibernateUtil;
+import view.Index;
+
+import javax.persistence.EntityManager;
+import java.util.Objects;
+
+public class UserController {
+
+    public void auth(String username , String pass){
+        UserService service = new UserService();
+        User u = service.findByPass(username , pass);
+        if(!Objects.isNull(u))
+            new Index();
+        Repository.currentUser = u;
+    }
+
+    public void save(Long id , String username , String pass){
+        EntityManager entityManager = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            entityManager = session.getEntityManagerFactory().createEntityManager();
+
+            entityManager.getTransaction().begin();
+            User user = entityManager.find(User.class, id);
+            if (Objects.isNull(user))
+                user = new User();
+
+            user.setUsername(username);
+            user.setPassword(pass);
+
+            entityManager.persist(user);
+            entityManager.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void save(Long id , Integer sumPrice , Integer volume){
+        EntityManager entityManager = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            entityManager = session.getEntityManagerFactory().createEntityManager();
+
+            entityManager.getTransaction().begin();
+            User user = entityManager.find(User.class, id);
+            if (Objects.isNull(user))
+                user = new User();
+
+            int previousSum = (!Objects.isNull(user.getSumPrice())) ? user.getSumPrice() : 0;
+            int previousVolume = (!Objects.isNull(user.getVolume())) ? user.getVolume() : 0;
+
+            user.setSumPrice(sumPrice + previousSum);
+            user.setVolume(previousVolume + volume);
+
+            entityManager.persist(user);
+            entityManager.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+package service;
+
+import model.User;
+import org.hibernate.Session;
+import util.HibernateUtil;
+
+import javax.persistence.EntityManager;
+import java.util.List;
+import java.util.Objects;
+
+public class UserService {
+
+    public User findByPass(String username , String pass){
+        EntityManager entityManager = null;
+        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            entityManager = session.getEntityManagerFactory().createEntityManager();
+
+            entityManager.getTransaction().begin();
+            String jpql = "select u from User u where u.username = :username and u.password = :pass";
+            List<User> userList =
+                    entityManager.createQuery(jpql, User.class)
+                            .setParameter("username", username)
+                            .setParameter("pass" , pass)
+                            .getResultList();
+
+            User user = null;
+
+            if (userList.size() != 0)
+                user = userList.get(0);
+
+            return user;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
